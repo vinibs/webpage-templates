@@ -48,7 +48,7 @@ html, body {
 
 .index .index-item {
     background: url('../img/bullet.svg') left center no-repeat;
-    background-size: 15px 15px;
+    background-size: auto 15px;
     color: rgb(60,60,60);
     margin: 45px 0;
     margin-left: -8px;
@@ -56,9 +56,14 @@ html, body {
 }
 
 .index .index-item.active {
-    background-image: url('../img/selected-bullet.svg');
+    background-image: url('../img/scroll.svg');
+    background-size: auto 36px;
     color: rgb(0,0,0);
     font-weight: bolder;
+    height: 35px;
+    line-height: 35px;
+    margin-left: -12px;
+    padding-left: 23px;
 }
 
 .index .index-item a,
@@ -113,9 +118,27 @@ html, body {
 
     .index .index-item {
         background-position: center bottom;
-        background-size: 12px 12px;
+        background-size: auto 13px;
         display: inline-block;
         margin: 5px 20px -7px;
         padding: 0 0 15px;
+    }
+
+    .index .index-item.active {
+        background: none;
+        position: relative;
+    }
+
+    .index .index-item.active::before {
+        background: url('../img/scroll.svg') bottom center no-repeat;
+        background-size: auto 36px;
+        content: "";
+        left: 40%;
+        height: 36px;
+        position: absolute;
+        top: 15px;
+        transform: rotate(-90deg);
+        width: 36px;
+        z-index: -1;
     }
 }
