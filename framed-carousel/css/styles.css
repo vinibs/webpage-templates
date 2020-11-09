@@ -1,0 +1,121 @@
+* {
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+html {
+    background-color: rgb(60,60,60);
+    height: 100vh;
+    margin: 0;
+    width: 100vw;
+}
+
+body {
+    background-color: rgb(255,255,255);
+    border-radius: 2px;
+    display: grid;
+    grid-template-columns: auto 130px;
+    grid-gap: 5px;
+    height: calc(100vh - 20px);
+    align-items: center;
+    margin: 10px;
+    width: calc(100vw - 20px);
+}
+
+html, body {
+    overflow: hidden;
+}
+
+.content {
+    padding: 10px;
+    align-self: stretch;
+}
+
+.index {
+    border-image: linear-gradient(
+            0deg, 
+            transparent 1%, 
+            rgb(60,60,60) 20%, 
+            rgb(60,60,60) 80%, 
+            transparent 99%
+        ) 1;
+    border-style: solid;
+    border-width: 0 0 0 1px;
+    justify-self: center;
+    text-transform: uppercase;
+}
+
+
+.index .index-item {
+    background: url('../img/bullet.svg') left center no-repeat;
+    background-size: 15px 15px;
+    color: rgb(60,60,60);
+    margin: 45px 0;
+    margin-left: -8px;
+    padding-left: 20px;
+}
+
+.index .index-item.active {
+    background-image: url('../img/selected-bullet.svg');
+    color: rgb(0,0,0);
+    font-weight: bolder;
+}
+
+.index .index-item a,
+.index .index-item a:visited {
+    color: rgb(60,60,60);
+    text-decoration: none;
+    transition: 0.2s linear;
+}
+
+.index .index-item a:hover {
+    color: rgb(0,0,0);
+}
+
+
+.scrollable {
+    overflow-y: auto;
+}
+
+#scrollTest {
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 5px;
+    max-height: calc(100vh - 150px);
+    padding: 10px;
+}
+
+
+
+
+@media (max-width: 800px) {
+    body {
+        grid-template-columns: auto 40px;
+        height: calc(100vh - 20px);
+        margin: 10px;
+        width: calc(100vw - 20px);
+    }
+
+    .index {
+        border-image: linear-gradient(
+            90deg, 
+            transparent 1%, 
+            rgb(60,60,60) 20%, 
+            rgb(60,60,60) 80%, 
+            transparent 99%
+        ) 1;
+        border-width: 0 0 1px 0;
+        font-size: 0.6em;
+        line-height: 1.5em;
+        text-align: center;;
+        transform: rotate(90deg);
+        white-space:nowrap;
+    }
+
+    .index .index-item {
+        background-position: center bottom;
+        background-size: 12px 12px;
+        display: inline-block;
+        margin: 5px 20px -7px;
+        padding: 0 0 15px;
+    }
+}
