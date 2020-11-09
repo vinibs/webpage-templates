@@ -1,22 +1,16 @@
 let processingScroll = false;
 let mouseOnScrollable = false;
 let touchOnScrollable = false;
-let startX, startY;
+let startX, startY, touchStartElement;
 
 setTimeout(function () {
     const scrollables = document.getElementsByClassName('scrollable');
     for (let scrollable of scrollables) {
-        scrollable.addEventListener('mouseenter', () => {
-            mouseOnScrollable = true;
-        });
+        scrollable.addEventListener('mouseenter', () => { mouseOnScrollable = true; });
     
-        scrollable.addEventListener('mouseleave', () => {
-            mouseOnScrollable = false;
-        });
+        scrollable.addEventListener('mouseleave', () => { mouseOnScrollable = false; });
 
-        scrollable.addEventListener('touchstart', () => {
-            touchOnScrollable = true;
-        });
+        scrollable.addEventListener('touchstart', () => { touchOnScrollable = true; });
     }
     console.log('Listener para mouse sobre elemento scrollable adicionado');
 
@@ -31,16 +25,16 @@ setTimeout(function () {
     
     document.body.addEventListener('touchstart', touchStartHandler);
     document.body.addEventListener('touchmove', touchMoveHandler);
-    document.body.addEventListener('touchend', () => {
-        touchOnScrollable = false;
-    });
+    document.body.addEventListener('touchend', () => { touchOnScrollable = false; });
     console.log('Listeners para eventos touch adicionados')
 
 }, 1200);
 
 
 function wheelHandler (e) {
-    if (!e.target.classList.contains('scrollable')) {
+    if (!e.target.classList.contains('scrollable') || 
+        e.target.scrollHeight <= e.target.clientHeight
+    ) {
         let direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
     
         if (direction && !processingScroll) {
@@ -61,7 +55,8 @@ function keydowScrollHandler (e) {
 
 function touchStartHandler (e) {                                    
     startX = e.touches[0].clientX;                                      
-    startY = e.touches[0].clientY;  
+    startY = e.touches[0].clientY;
+    touchStartElement = e.target;
 }
 
 function touchMoveHandler (e) {                                      
@@ -71,9 +66,9 @@ function touchMoveHandler (e) {
     const diffX = posX - startX;
     const diffY = posY - startY;
 
-    console.log(touchOnScrollable)
-
-    if (!touchOnScrollable && (diffY > 20 || diffY < -20)) {
+    if ((!touchOnScrollable && (diffY > 20 || diffY < -20)) || 
+        touchStartElement.scrollHeight <= touchStartElement.clientHeight
+    ) {
         let direction = diffY > 0 ? 'up' : 'down';
         processScroll(direction);
     }
