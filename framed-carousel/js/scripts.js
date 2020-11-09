@@ -1,7 +1,8 @@
 let processingScroll = false;
 let mouseOnScrollable = false;
 let touchOnScrollable = false;
-let startX, startY, touchStartElement;
+let waitingForScrollEnd = false;
+let startX, startY, touchStartElement, lastScrollTop = 0;
 
 setTimeout(function () {
     const scrollables = document.getElementsByClassName('scrollable');
@@ -11,6 +12,8 @@ setTimeout(function () {
         scrollable.addEventListener('mouseleave', () => { mouseOnScrollable = false; });
 
         scrollable.addEventListener('touchstart', () => { touchOnScrollable = true; });
+
+        scrollable.addEventListener('scroll', scrollableScrollHandler);
     }
     console.log('Listener para mouse sobre elemento scrollable adicionado');
 
@@ -32,10 +35,16 @@ setTimeout(function () {
 
 
 function wheelHandler (e) {
+    const direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
+
     if (!e.target.classList.contains('scrollable') || 
-        e.target.scrollHeight <= e.target.clientHeight
+        (direction === 'up' && e.target.scrollTop === 0 && !waitingForScrollEnd) ||
+        (
+            direction === 'down' && 
+            e.target.clientHeight + e.target.scrollTop === e.target.scrollHeight &&
+            !waitingForScrollEnd
+        )
     ) {
-        let direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
     
         if (direction && !processingScroll) {
             processScroll(direction);
@@ -48,7 +57,7 @@ function keydowScrollHandler (e) {
         document.activeElement.tagName.toLowerCase() === 'body' &&
         (e.key === 'ArrowUp' || e.key === 'ArrowDown')
     ) {
-        let direction = e.key === 'ArrowUp' ? 'up' : 'down';
+        const direction = e.key === 'ArrowUp' ? 'up' : 'down';
         processScroll(direction);
     }
 }
@@ -65,13 +74,41 @@ function touchMoveHandler (e) {
 
     const diffX = posX - startX;
     const diffY = posY - startY;
+    const direction = diffY > 0 ? 'up' : 'down';
 
     if ((!touchOnScrollable && (diffY > 20 || diffY < -20)) || 
-        touchStartElement.scrollHeight <= touchStartElement.clientHeight
+        (
+            direction === 'up' && 
+            touchStartElement.scrollTop === 0 && 
+            !waitingForScrollEnd
+        ) ||
+        (
+            direction === 'down' && 
+            touchStartElement.clientHeight 
+                + touchStartElement.scrollTop 
+                === touchStartElement.scrollHeight &&
+            !waitingForScrollEnd
+        )
     ) {
-        let direction = diffY > 0 ? 'up' : 'down';
         processScroll(direction);
     }
+}
+
+function scrollableScrollHandler (e) {
+    if (lastScrollTop !== e.target.scrollTop && 
+        (
+            e.target.scrollTop == 0 || 
+            e.target.clientHeight + e.target.scrollTop === e.target.scrollHeight
+        )
+    ) {
+        waitingForScrollEnd = true;
+
+        setTimeout(() => {
+            waitingForScrollEnd = false;
+        }, 1200);
+    }
+
+    lastScrollTop = e.target.scrollTop;
 }
 
 
