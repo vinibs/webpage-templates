@@ -102,7 +102,7 @@ html, body {
 #scrollTest {
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 5px;
-    max-height: calc(100% - 150px);
+    max-height: calc(100% - 170px);
     padding: 10px;
 }
 
