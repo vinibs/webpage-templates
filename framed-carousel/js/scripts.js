@@ -9,39 +9,35 @@ let startX, startY, touchStartElement, lastScrollTop = 0;
 
 setTimeout(function () {
     document.body.addEventListener('scroll', scrollableScrollHandler);
-    console.log('Listener para scroll adicionado');
+    // console.log('Listener para scroll adicionado');
 
     document.body.addEventListener('wheel', wheelHandler);
-    console.log('Listener para movimento da roda do mouse adicionado');
+    // console.log('Listener para movimento da roda do mouse adicionado');
     
     document.body.addEventListener('keydown', keydownScrollHandler);
-    console.log('Listener para keydown adicionado');
+    // console.log('Listener para keydown adicionado');
 
     document.body.addEventListener('touchstart', touchStartHandler);
     document.body.addEventListener('touchmove', touchMoveHandler);
     document.body.addEventListener('touchend', () => { changePageTouchStarted = false });
-    console.log('Listeners para eventos touch adicionados')
+    // console.log('Listeners para eventos touch adicionados')
 
     document.body.addEventListener('click', (e) => { lastClickedElement = e.target });
-
+    console.log('Todos os listeners adicionados');
 }, 1200);
 
 
 function wheelHandler (e) {
     const direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
-    const scrollableElement = document.body;
 
     if (((
-            scrollableElement &&
             direction === 'up' && 
-            scrollableElement.scrollTop === 0 && !waitingForScrollEnd
+            canScrollPageUp() && 
+            !waitingForScrollEnd
         ) ||
         (
-            scrollableElement &&
             direction === 'down' && 
-            scrollableElement.clientHeight 
-                + scrollableElement.scrollTop 
-                === scrollableElement.scrollHeight &&
+            canScrollPageDown() &&
             !waitingForScrollEnd
         )) && !isScrolling
     ) {
@@ -54,19 +50,15 @@ function wheelHandler (e) {
 
 function keydownScrollHandler (e) {
     const direction = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : null;
-    const scrollableElement = document.body;
 
     if ((
-            scrollableElement &&
             direction === 'up' && 
-            scrollableElement.scrollTop === 0 && !waitingForScrollEnd
+            canScrollPageUp() && 
+            !waitingForScrollEnd
         ) ||
         (
-            scrollableElement &&
             direction === 'down' && 
-            scrollableElement.clientHeight 
-                + scrollableElement.scrollTop 
-                === scrollableElement.scrollHeight &&
+            canScrollPageDown() &&
             !waitingForScrollEnd
         )
     ) {
@@ -79,15 +71,12 @@ function touchStartHandler (e) {
     startY = e.touches[0].clientY;
     touchStartElement = e.target;
 
-    const scrollableElement = document.body;
-    if (scrollableElement.scrollTop === 0) {
+    if (canScrollPageUp()) {
         canTouchChangePageUp = true;
     }
     else { canTouchChangePageUp = false; }
     
-    if (scrollableElement.clientHeight + scrollableElement.scrollTop 
-            === scrollableElement.scrollHeight
-    ) {
+    if (canScrollPageDown()) {
         canTouchChangePageDown = true;
     }
     else { canTouchChangePageDown = false; }
@@ -99,19 +88,16 @@ function touchMoveHandler (e) {
 
     const diffY = posY - startY;
     const direction = diffY > 0 ? 'up' : 'down';
-    const scrollableElement = document.body;
 
     if ((
             direction === 'up' && 
-            scrollableElement.scrollTop === 0 && 
+            canScrollPageUp() && 
             canTouchChangePageUp &&
             !changePageTouchStarted
         ) ||
         (
             direction === 'down' && 
-            scrollableElement.clientHeight 
-                + scrollableElement.scrollTop 
-                === scrollableElement.scrollHeight &&
+            canScrollPageDown() &&
             canTouchChangePageDown &&
             !changePageTouchStarted
         )
@@ -124,22 +110,30 @@ function touchMoveHandler (e) {
 function scrollableScrollHandler (e) {
     isScrolling = true;
     
-    if (lastScrollTop !== e.target.scrollTop && 
-        (
-            e.target.scrollTop == 0 || 
-            e.target.clientHeight + e.target.scrollTop === e.target.scrollHeight
-        )
+    if (
+        lastScrollTop !== e.target.scrollTop && 
+        (canScrollPageUp(e.target) || canScrollPageDown(e.target))
     ) {
         isScrolling = false;
         waitingForScrollEnd = true;
 
         setTimeout(() => {
-            console.log('Reativando escuta de scroll após final de rolagem')
+            console.log('Reativada a escuta de scroll após final de rolagem')
             waitingForScrollEnd = false;
         }, 1200);
     }
 
     lastScrollTop = e.target.scrollTop;
+}
+
+
+
+function canScrollPageUp (element = document.body) {
+    return element && element.scrollTop === 0;
+}
+
+function canScrollPageDown (element = document.body) {
+    return element && element.clientHeight + element.scrollTop >= element.scrollHeight
 }
 
 
