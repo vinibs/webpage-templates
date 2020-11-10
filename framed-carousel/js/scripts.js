@@ -2,25 +2,24 @@ let processingPageScroll = false;
 let waitingForScrollEnd = false;
 let canTouchChangePageUp = false;
 let canTouchChangePageDown = false;
+let changePageTouchStarted = false;
 let isScrolling = false;
 let lastClickedElement = null;
 let startX, startY, touchStartElement, lastScrollTop = 0;
 
 setTimeout(function () {
-    const scrollables = document.querySelectorAll('.scrollable');
-    for (let scrollable of scrollables) {
-        scrollable.addEventListener('scroll', scrollableScrollHandler);
-    }
-    console.log('Listener para mouse sobre elemento scrollable adicionado');
+    document.body.addEventListener('scroll', scrollableScrollHandler);
+    console.log('Listener para scroll adicionado');
 
     document.body.addEventListener('wheel', wheelHandler);
-    console.log('Listener para scroll adicionado');
+    console.log('Listener para movimento da roda do mouse adicionado');
     
     document.body.addEventListener('keydown', keydownScrollHandler);
     console.log('Listener para keydown adicionado');
 
     document.body.addEventListener('touchstart', touchStartHandler);
     document.body.addEventListener('touchmove', touchMoveHandler);
+    document.body.addEventListener('touchend', () => { changePageTouchStarted = false });
     console.log('Listeners para eventos touch adicionados')
 
     document.body.addEventListener('click', (e) => { lastClickedElement = e.target });
@@ -30,10 +29,9 @@ setTimeout(function () {
 
 function wheelHandler (e) {
     const direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
-    const scrollableElement = getParentOfClass(e.target, 'scrollable');
+    const scrollableElement = document.body;
 
-    if ((!scrollableElement || 
-        (
+    if (((
             scrollableElement &&
             direction === 'up' && 
             scrollableElement.scrollTop === 0 && !waitingForScrollEnd
@@ -55,13 +53,10 @@ function wheelHandler (e) {
 }
 
 function keydownScrollHandler (e) {
-    const direction = e.key === 'ArrowUp' ? 'up' : 'down';
-    const scrollableElement = document.activeElement.tagName.toLowerCase() !== 'body' ?
-        getParentOfClass(document.activeElement, 'scrollable') :
-        getParentOfClass(lastClickedElement, 'scrollable');
+    const direction = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : null;
+    const scrollableElement = document.body;
 
-    if ((!scrollableElement && (e.key === 'ArrowUp' || e.key === 'ArrowDown'))|| 
-        (
+    if ((
             scrollableElement &&
             direction === 'up' && 
             scrollableElement.scrollTop === 0 && !waitingForScrollEnd
@@ -84,14 +79,13 @@ function touchStartHandler (e) {
     startY = e.touches[0].clientY;
     touchStartElement = e.target;
 
-    const scrollableElement = getParentOfClass(touchStartElement, 'scrollable');
-    if (scrollableElement && scrollableElement.scrollTop === 0) {
+    const scrollableElement = document.body;
+    if (scrollableElement.scrollTop === 0) {
         canTouchChangePageUp = true;
     }
     else { canTouchChangePageUp = false; }
     
-    if (scrollableElement && 
-            scrollableElement.clientHeight + scrollableElement.scrollTop 
+    if (scrollableElement.clientHeight + scrollableElement.scrollTop 
             === scrollableElement.scrollHeight
     ) {
         canTouchChangePageDown = true;
@@ -103,27 +97,26 @@ function touchMoveHandler (e) {
     const posX = e.touches[0].clientX;                                      
     const posY = e.touches[0].clientY;
 
-    const diffX = posX - startX;
     const diffY = posY - startY;
     const direction = diffY > 0 ? 'up' : 'down';
-    const scrollableElement = getParentOfClass(touchStartElement, 'scrollable');
+    const scrollableElement = document.body;
 
-    if ((!scrollableElement && (diffY > 20 || diffY < -20)) || 
-        (
-            scrollableElement && 
+    if ((
             direction === 'up' && 
             scrollableElement.scrollTop === 0 && 
-            canTouchChangePageUp
+            canTouchChangePageUp &&
+            !changePageTouchStarted
         ) ||
         (
-            scrollableElement && 
             direction === 'down' && 
             scrollableElement.clientHeight 
                 + scrollableElement.scrollTop 
                 === scrollableElement.scrollHeight &&
-            canTouchChangePageDown
+            canTouchChangePageDown &&
+            !changePageTouchStarted
         )
     ) {
+        changePageTouchStarted = true;
         processScroll(direction);
     }
 }
@@ -149,29 +142,15 @@ function scrollableScrollHandler (e) {
     lastScrollTop = e.target.scrollTop;
 }
 
-function getParentOfClass (element, className) {
-    if (!element) return false;
-
-    if (element.classList && element.classList.contains(className)) {
-        return element;
-    }
-    else if (element.tagName.toLowerCase() === 'body') {
-        return null;
-    }
-    else {
-        return getParentOfClass (element.parentNode, className);
-    }
-}
-
 
 function processScroll (direction) {
+    console.log('Trocar de página')
     window.location.href = direction === 'up' ? topPage : bottomPage;
     
     processingPageScroll = true;
     setTimeout(function () {
         setTimeout(function () {
             processingPageScroll = false;
-            processingDom.innerHTML = '';
         }, 1300);
     }, 1000);
 }
