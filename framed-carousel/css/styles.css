@@ -150,7 +150,7 @@ h1 {
             background-size: auto 13px;
             display: inline-block;
             margin: 0 20px -7px;
-            padding: 0 0 15px;
+            padding: 0 0 18px;
         }
     
         .index .index-item.active {
@@ -167,7 +167,7 @@ h1 {
             left: 40%;
             height: 36px;
             position: absolute;
-            top: 2px;
+            top: 3px;
             transform: rotate(-90deg);
             width: 36px;
             z-index: -1;
