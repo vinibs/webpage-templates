@@ -15,7 +15,6 @@ body {
     border-radius: 2px;
     display: grid;
     grid-template-columns: auto 130px;
-    grid-gap: 5px;
     height: calc(100% - 20px);
     align-items: center;
     margin: 10px;
@@ -26,14 +25,17 @@ html, body {
     overflow: hidden;
 }
 
-.content {
+h1 {
+    margin: .67em 10px;
+}
+
+.main-content {
     align-self: stretch;
     grid-column: 1;
     grid-row: 1;
     height: 100%;
     max-height: 100%;
     overflow: hidden;
-    padding: 10px;
 }
 
 .index {
@@ -80,7 +82,7 @@ html, body {
     height: 36px;
     line-height: 36px;
     margin-left: -12px;
-    padding-left: 25px;
+    padding-left: 24px;
 }
 
 .index .index-item a,
@@ -97,12 +99,18 @@ html, body {
 
 .scrollable {
     overflow-y: auto;
+    max-height: 100%;
+}
+
+
+.content {
+    margin: 10px;
 }
 
 #scrollTest {
-    border: 0px solid rgba(0,0,0,0.2);
+    /* border: 1px solid rgba(0,0,0,0.2); */
     border-radius: 5px;
-    max-height: calc(100% - 57px);
+    /* max-height: calc(100% - 60px); */
     padding: 10px;
 }
 
@@ -111,48 +119,85 @@ html, body {
 
 @media (max-width: 800px) {
     body {
-        grid-template-columns: auto 40px;
+        font-size: 0.8em;
+        height: calc(100% - 10px);
+        margin: 5px;
+        width: calc(100vw - 10px);
     }
 
-    .index {
-        border-image: linear-gradient(
-            90deg, 
-            transparent 1%, 
-            rgb(60,60,60) 20%, 
-            rgb(60,60,60) 80%, 
-            transparent 99%
-        ) 1;
-        border-width: 0 0 1px 0;
-        font-size: 0.6em;
-        line-height: 1.5em;
-        text-align: center;;
-        transform: rotate(90deg);
-        white-space:nowrap;
+    @media (orientation: portrait) {
+        body {
+            grid-template-columns: auto 40px;
+        }
+    
+        .index {
+            border-image: linear-gradient(
+                90deg, 
+                transparent 1%, 
+                rgb(60,60,60) 20%, 
+                rgb(60,60,60) 80%, 
+                transparent 99%
+            ) 1;
+            border-width: 0 0 1px 0;
+            font-size: 0.7em;
+            text-align: center;
+            transform: rotate(90deg);
+            white-space:nowrap;
+        }
+    
+        .index .index-item {
+            background-position: center bottom;
+            background-size: auto 13px;
+            display: inline-block;
+            margin: 0 20px -7px;
+            padding: 0 0 15px;
+        }
+    
+        .index .index-item.active {
+            background: none;
+            position: relative;
+            height: auto;
+            line-height: initial;
+        }
+    
+        .index .index-item.active::before {
+            background: url('../img/scroll.svg') bottom center no-repeat;
+            background-size: auto 36px;
+            content: "";
+            left: 40%;
+            height: 36px;
+            position: absolute;
+            top: 2px;
+            transform: rotate(-90deg);
+            width: 36px;
+            z-index: -1;
+        }
     }
 
-    .index .index-item {
-        background-position: center bottom;
-        background-size: auto 13px;
-        display: inline-block;
-        margin: 5px 20px -7px;
-        padding: 0 0 15px;
-    }
+    @media (orientation: landscape) {
+        body {
+            grid-template-columns: auto 75px;
+        }
+    
+        .index {
+            font-size: 0.7em;
+        }
 
-    .index .index-item.active {
-        background: none;
-        position: relative;
-    }
+        .index .index-item {
+            background-size: auto 11px;
+            margin-bottom: 25px;
+            margin-left: -6px;
+            margin-top: 25px;
+            padding-left: 15px;
+        }
 
-    .index .index-item.active::before {
-        background: url('../img/scroll.svg') bottom center no-repeat;
-        background-size: auto 36px;
-        content: "";
-        left: 40%;
-        height: 36px;
-        position: absolute;
-        top: 15px;
-        transform: rotate(-90deg);
-        width: 36px;
-        z-index: -1;
+        .index .index-item.active {
+            background-size: auto 25px;
+            height: 25px;
+            line-height: 25px;
+            margin-left: -8px;
+            padding-left: 17px;
+        }
     }
+    
 }
