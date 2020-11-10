@@ -110,7 +110,6 @@ h1 {
 #scrollTest {
     /* border: 1px solid rgba(0,0,0,0.2); */
     border-radius: 5px;
-    /* max-height: calc(100% - 60px); */
     padding: 10px;
 }
 
@@ -162,14 +161,14 @@ h1 {
     
         .index .index-item.active::before {
             background: url('../img/scroll.svg') bottom center no-repeat;
-            background-size: auto 36px;
+            background-size: auto 35px;
             content: "";
             left: 40%;
-            height: 36px;
+            height: 35px;
             position: absolute;
-            top: 4px;
+            top: 5px;
             transform: rotate(-90deg);
-            width: 36px;
+            width: 35px;
             z-index: -1;
         }
     }
