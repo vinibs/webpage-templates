@@ -103,10 +103,6 @@ h1 {
         width: calc(100vw - 10px);
     }
 
-    .scrollable::-webkit-scrollbar { 
-        display: none;
-    }
-
     @media (orientation: portrait) {
         body {
             padding-right: 45px;
