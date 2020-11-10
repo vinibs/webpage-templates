@@ -1,6 +1,8 @@
 let processingPageScroll = false;
 let waitingForScrollEnd = false;
-let canTouchChangePage = false;
+let canTouchChangePageUp = false;
+let canTouchChangePageDown = false;
+let isScrolling = false;
 let lastClickedElement = null;
 let startX, startY, touchStartElement, lastScrollTop = 0;
 
@@ -14,7 +16,7 @@ setTimeout(function () {
     document.body.addEventListener('wheel', wheelHandler);
     console.log('Listener para scroll adicionado');
     
-    document.body.addEventListener('keydown', keydowScrollHandler);
+    document.body.addEventListener('keydown', keydownScrollHandler);
     console.log('Listener para keydown adicionado');
 
     document.body.addEventListener('touchstart', touchStartHandler);
@@ -22,7 +24,6 @@ setTimeout(function () {
     console.log('Listeners para eventos touch adicionados')
 
     document.body.addEventListener('click', (e) => { lastClickedElement = e.target });
-    document.body.addEventListener('focus', (e) => { lastClickedElement = e.target });
 
 }, 1200);
 
@@ -31,7 +32,7 @@ function wheelHandler (e) {
     const direction = e.deltaY < 0 ? 'up' : e.deltaY > 0 ? 'down' : null;
     const scrollableElement = getParentOfClass(e.target, 'scrollable');
 
-    if (!scrollableElement || 
+    if ((!scrollableElement || 
         (
             scrollableElement &&
             direction === 'up' && 
@@ -44,7 +45,7 @@ function wheelHandler (e) {
                 + scrollableElement.scrollTop 
                 === scrollableElement.scrollHeight &&
             !waitingForScrollEnd
-        )
+        )) && !isScrolling
     ) {
     
         if (direction && !processingPageScroll) {
@@ -53,7 +54,7 @@ function wheelHandler (e) {
     }
 }
 
-function keydowScrollHandler (e) {
+function keydownScrollHandler (e) {
     const direction = e.key === 'ArrowUp' ? 'up' : 'down';
     const scrollableElement = document.activeElement.tagName.toLowerCase() !== 'body' ?
         getParentOfClass(document.activeElement, 'scrollable') :
@@ -84,19 +85,18 @@ function touchStartHandler (e) {
     touchStartElement = e.target;
 
     const scrollableElement = getParentOfClass(touchStartElement, 'scrollable');
-    if ((scrollableElement && scrollableElement.scrollTop === 0) ||
-        (
-            scrollableElement &&
-            scrollableElement.clientHeight 
-                + scrollableElement.scrollTop 
-                === scrollableElement.scrollHeight
-        )
+    if (scrollableElement && scrollableElement.scrollTop === 0) {
+        canTouchChangePageUp = true;
+    }
+    else { canTouchChangePageUp = false; }
+    
+    if (scrollableElement && 
+            scrollableElement.clientHeight + scrollableElement.scrollTop 
+            === scrollableElement.scrollHeight
     ) {
-        canTouchChangePage = true;
+        canTouchChangePageDown = true;
     }
-    else {
-        canTouchChangePage = false;
-    }
+    else { canTouchChangePageDown = false; }
 }
 
 function touchMoveHandler (e) {                                      
@@ -113,7 +113,7 @@ function touchMoveHandler (e) {
             scrollableElement && 
             direction === 'up' && 
             scrollableElement.scrollTop === 0 && 
-            canTouchChangePage
+            canTouchChangePageUp
         ) ||
         (
             scrollableElement && 
@@ -121,7 +121,7 @@ function touchMoveHandler (e) {
             scrollableElement.clientHeight 
                 + scrollableElement.scrollTop 
                 === scrollableElement.scrollHeight &&
-            canTouchChangePage
+            canTouchChangePageDown
         )
     ) {
         processScroll(direction);
@@ -129,12 +129,15 @@ function touchMoveHandler (e) {
 }
 
 function scrollableScrollHandler (e) {
+    isScrolling = true;
+    
     if (lastScrollTop !== e.target.scrollTop && 
         (
             e.target.scrollTop == 0 || 
             e.target.clientHeight + e.target.scrollTop === e.target.scrollHeight
         )
     ) {
+        isScrolling = false;
         waitingForScrollEnd = true;
 
         setTimeout(() => {
