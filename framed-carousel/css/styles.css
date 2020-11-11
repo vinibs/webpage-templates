@@ -57,7 +57,7 @@ h1 {
 
 
 .index .index-item {
-    background: url('../img/bullet.svg') left center no-repeat;
+    background: url('../img/icons/bullet.svg') left center no-repeat;
     background-size: auto 15px;
     color: rgb(60,60,60);
     margin: 45px 0;
@@ -66,7 +66,7 @@ h1 {
 }
 
 .index .index-item.active {
-    background-image: url('../img/scroll.svg');
+    background-image: url('../img/icons/scroll.svg');
     background-size: auto 36px;
     color: rgb(0,0,0);
     font-weight: bolder;
@@ -142,13 +142,13 @@ h1 {
         }
     
         .index .index-item.active::before {
-            background: url('../img/scroll.svg') bottom center no-repeat;
+            background: url('../img/icons/scroll.svg') bottom center no-repeat;
             background-size: auto 35px;
             content: "";
             left: 40%;
             height: 35px;
             position: absolute;
-            top: 5px;
+            top: 4.2px;
             transform: rotate(-90deg);
             width: 35px;
             z-index: -1;
