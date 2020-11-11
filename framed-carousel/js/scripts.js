@@ -89,7 +89,14 @@ function touchMoveHandler (e) {
     const diffY = posY - startY;
     const direction = diffY > 0 ? 'up' : 'down';
 
-    if ((
+    if (canTouchChangePageUp && direction !== 'up') 
+        canTouchChangePageUp = false;
+    
+    if (canTouchChangePageDown && direction !== 'down') 
+        canTouchChangePageDown = false;
+
+    if (Math.abs(diffY) >= 20 &&
+        (
             direction === 'up' && 
             canScrollPageUp() && 
             canTouchChangePageUp &&
